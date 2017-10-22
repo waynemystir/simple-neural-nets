@@ -55,7 +55,7 @@ print("Final W ({})".format(W))
 if args.plot:
     fig, ax1 = plt.subplots()
     ax2 = ax1.twinx()
-    lss, = ax1.plot(iz, losses, 'r-', label = 'loss')
+    lss, = ax1.plot(iz, losses, 'r-', label = 'loss', linewidth=3)
     Ws0, = ax2.plot(iz, Ws[0,:], label='W0')
     Ws1, = ax2.plot(iz, Ws[1,:], label='W1')
     Ws2, = ax2.plot(iz, Ws[2,:], label='W2')
