@@ -13,6 +13,25 @@ def quadratic_loss(y, a):
 def quadratic_grad(y, a):
     return a - y
 
+def softmax(x):
+    orig_shape = x.shape
+
+    if len(x.shape) > 1:
+        # Matrix
+        tmp = np.max(x, axis = 1)
+        x -= tmp.reshape((x.shape[0], 1)) 
+        x = np.exp(x) / np.sum(np.exp(x), axis = 1).reshape((x.shape[0], 1)) 
+
+    assert x.shape == orig_shape
+    return x
+
+def cross_entropy_loss(y, yhat):
+#    return -np.sum(np.nan_to_num(np.log(yhat[range(4), y.reshape(4)].clip(min=1e-4))))/y.shape[0]
+    return -np.sum(np.nan_to_num(np.log(yhat[y==1].clip(min=1e-4))))/y.shape[0]
+
+def cross_entropy_grad(y, yhat):
+    return (yhat - y)/y.shape[0]
+
 def gradcheck_naive(f, x):
     """ Gradient check for a function f.
 
