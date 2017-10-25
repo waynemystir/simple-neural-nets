@@ -1,4 +1,5 @@
 import argparse
+from sklearn import datasets
 import numpy as np
 from simple_utils import sigmoid, sigmoid_grad, softmax, cross_entropy_loss, cross_entropy_grad
 import matplotlib.pyplot as plt
@@ -8,26 +9,23 @@ parser.add_argument('--plot', action='store_true',
                             help='plot the loss and weights')
 args = parser.parse_args()
 
-X = np.array([
-    [0,0,1],
-    [0,1,1],
-    [1,0,1],
-    [1,1,1]
-    ])
-
-y = np.array([[0,1,1,0]]).T
-y_onehot = np.zeros((4,2), dtype=int)
-y_onehot[range(4), y.reshape(4)]=1
+X,y = datasets.load_iris(return_X_y=True)
+num_labels = len(np.unique(y))
+y_onehot = np.eye(num_labels)[y]
 
 # seed random number to make the calculation
 # deterministic (easier to debug, etc)
 np.random.seed(1)
 
-epochs = 1000
-W0 = np.random.randn(3, 4)
-W1 = np.random.randn(4, 2)
+input_dims = X.shape[1]
+hidden_dims = 8
+epochs = 5000
+W0 = np.random.randn(input_dims, hidden_dims)
+W1 = np.random.randn(hidden_dims, num_labels)
 W0s = W0.copy()
 W1s = W1.copy()
+B0 = np.random.randn(1,hidden_dims)
+B1 = np.random.randn(1,num_labels)
 
 iz = []
 losses = []
@@ -35,8 +33,8 @@ losses = []
 for i in range(epochs):
 
     # forward propagate
-    a1 = sigmoid(X.dot(W0))
-    a2 = softmax(a1.dot(W1))
+    a1 = sigmoid(X.dot(W0)+B0)
+    a2 = softmax(a1.dot(W1)+B1)
     loss = cross_entropy_loss(y_onehot, a2)
 
     # backpropagation
@@ -56,10 +54,18 @@ for i in range(epochs):
     # loss due to weights
     nabla_w1 = a1.T.dot(l2_delta)
     nabla_w0 = X.T.dot(l1_delta)
+    nabla_b1 = np.sum(l2_delta,0,keepdims=True)
+    nabla_b0 = np.sum(l1_delta,0)
+    if i == 0:
+        print("BBBBBBBB0000000 l1d({}) nb0({}) b0({})".format(l1_delta.shape, nabla_b0.shape, B0.shape))
+        print("BBBBBBBB1111111 l2d({}) nb1({}) b1({}) nb1N({})"
+                .format(l2_delta.shape, nabla_b1.shape, B1.shape, np.sum(l2_delta,0).shape))
 
     # and update the weights
     W1 -= nabla_w1
     W0 -= nabla_w0
+    B1 -= nabla_b1
+    B0 -= nabla_b0
 
     iz.append(i)
     losses.append(loss)
@@ -67,7 +73,7 @@ for i in range(epochs):
         W0s = np.concatenate((W0s, W0.copy()), axis = 1)
         W1s = np.concatenate((W1s, W1.copy()), axis = 1)
 
-W0s = W0s.reshape(3, epochs, 4)
+W0s = W0s.reshape(input_dims, epochs, hidden_dims )
 print("Final prediction ({})".format(a2))
 print("Final W ({})".format(W0))
 

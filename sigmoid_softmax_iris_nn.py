@@ -1,4 +1,5 @@
 import argparse
+from sklearn import datasets
 import numpy as np
 from simple_utils import sigmoid, sigmoid_grad, softmax, cross_entropy_loss, cross_entropy_grad
 import matplotlib.pyplot as plt
@@ -8,24 +9,17 @@ parser.add_argument('--plot', action='store_true',
                             help='plot the loss and weights')
 args = parser.parse_args()
 
-X = np.array([
-    [0,0,1],
-    [0,1,1],
-    [1,0,1],
-    [1,1,1]
-    ])
-
-y = np.array([[0,1,1,0]]).T
-y_onehot = np.zeros((4,2), dtype=int)
-y_onehot[range(4), y.reshape(4)]=1
+X,y = datasets.load_iris(return_X_y=True)
+num_labels = len(np.unique(y))
+y_onehot = np.eye(num_labels)[y]
 
 # seed random number to make the calculation
 # deterministic (easier to debug, etc)
 np.random.seed(1)
 
-epochs = 1000
-W0 = np.random.randn(3, 4)
-W1 = np.random.randn(4, 2)
+epochs = 5000
+W0 = np.random.randn(4, 8)
+W1 = np.random.randn(8, num_labels)
 W0s = W0.copy()
 W1s = W1.copy()
 
@@ -67,7 +61,7 @@ for i in range(epochs):
         W0s = np.concatenate((W0s, W0.copy()), axis = 1)
         W1s = np.concatenate((W1s, W1.copy()), axis = 1)
 
-W0s = W0s.reshape(3, epochs, 4)
+W0s = W0s.reshape(4, epochs, 8)
 print("Final prediction ({})".format(a2))
 print("Final W ({})".format(W0))
 
