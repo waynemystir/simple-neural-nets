@@ -1,4 +1,4 @@
-import numpy as np, sklearn.datasets as skld
+import numpy as np
 X,y = np.array([[0,0,1,1],[0,1,0,1],[1,1,1,1]]),np.array([0,1,1,0])
 y_onehot = np.eye(2,dtype=int)[y].T
 np.random.seed(1)
