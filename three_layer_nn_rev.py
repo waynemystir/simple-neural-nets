@@ -20,6 +20,7 @@ y = np.array([[0,1,1,0]])
 # deterministic (easier to debug, etc)
 np.random.seed(1)
 
+epochs = 2000
 W0 = np.random.randn(4, 3)
 W1 = np.random.randn(1, 4)
 W0s = W0.copy()
@@ -28,7 +29,7 @@ W1s = W1.copy()
 iz = []
 losses = []
 
-for i in range(1000):
+for i in range(epochs):
 
     # forward propagate
     a1 = sigmoid(W0.dot(X))
@@ -63,7 +64,7 @@ for i in range(1000):
         W0s = np.concatenate((W0s, W0.copy()), axis = 1)
         W1s = np.concatenate((W1s, W1.copy()), axis = 1)
 
-W0s = W0s.reshape(4, 1000, 3)
+W0s = W0s.reshape(4, epochs, 3)
 print("Final prediction ({})".format(a2))
 print("Final W ({})".format(W0))
 

@@ -8,10 +8,10 @@ def sigmoid_grad(f):
     return f * (1 - f)
 
 def quadratic_loss(y, a):
-    return 1/2 * np.sum(np.power(y - a, 2))
+    return 1/2 * np.sum(np.power(y - a, 2))/y.shape[0]
 
 def quadratic_grad(y, a):
-    return a - y
+    return (a - y)/y.shape[0]
 
 def softmax(x):
     orig_shape = x.shape
@@ -23,7 +23,7 @@ def softmax(x):
     else:
         #Vector
         x = np.exp(x - np.max(x))
-        x /= np.sum(g)
+        x /= np.sum(x)
 
     assert x.shape == orig_shape
     return x
